@@ -76,7 +76,7 @@ export class AppointmentService {
     doctorId: string,
     startDate: string,
     endDate: string,
-  ): Promise<AppointmentResponseDto[]> {
+  ): Promise<AppointmentResponseDto[] | { message: string }> {
     // Check if doctor exists
     const doctor = await this.prisma.doctor.findUnique({
       where: { id: doctorId },
@@ -106,6 +106,10 @@ export class AppointmentService {
         },
       },
     });
+
+    if (appointments.length === 0) {
+      return { message: 'No bookings found for this doctor.' };
+    }
 
     return appointments.map((appointment) => ({
       id: appointment.id,

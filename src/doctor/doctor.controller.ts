@@ -115,6 +115,18 @@ export class DoctorController {
     description: 'List of booked appointments retrieved successfully',
     type: [AppointmentResponseDto],
   })
+  @ApiOkResponse({
+    description: 'No bookings found',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'No bookings found for this doctor.'
+        }
+      }
+    }
+  })
   @ApiNotFoundResponse({
     description: 'Doctor not found',
   })
@@ -124,7 +136,7 @@ export class DoctorController {
   async getBookings(
     @Param('doctorId') doctorId: string,
     @Query() query: GetBookingsDto,
-  ): Promise<AppointmentResponseDto[]> {
+  ): Promise<AppointmentResponseDto[] | { message: string }> {
     return this.appointmentService.getBookings(
       doctorId,
       query.startDate,
