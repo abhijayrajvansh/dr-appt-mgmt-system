@@ -48,6 +48,7 @@ model Slot {
   // Relations
   doctor         Doctor          @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   recurrenceRule RecurrenceRule? @relation(fields: [recurrenceRuleId], references: [id], onDelete: Cascade)
+  appointment    Appointment?
 
   @@map("slots")
 }
@@ -67,3 +68,18 @@ model RecurrenceRule {
   @@map("recurrence_rules")
 }
 
+model Appointment {
+  id           String   @id @default(uuid())
+  patientName  String
+  patientEmail String
+  phoneNumber  String
+  notes        String?
+  slotId       String   @unique // One-to-one relation with Slot
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  // Relations
+  slot Slot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+
+  @@map("appointments")
+}
