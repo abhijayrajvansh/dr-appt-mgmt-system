@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { BookAppointmentDto } from './dto/book-appointment.dto';
 import { AppointmentResponseDto } from './dto/appointment-response.dto';
 import { SlotStatus } from '@prisma/client';
+import * as moment from 'moment';
 
 @Injectable()
 export class AppointmentService {
@@ -16,7 +17,6 @@ export class AppointmentService {
     slotId: string,
     bookingData: BookAppointmentDto,
   ): Promise<AppointmentResponseDto> {
-    
     // Get the slot and check if it exists and is available
     const slot = await this.prisma.slot.findUnique({
       where: { id: slotId },
@@ -70,5 +70,52 @@ export class AppointmentService {
       }
       throw error;
     }
+  }
+
+  async getBookings(
+    doctorId: string,
+    startDate: string,
+    endDate: string,
+  ): Promise<AppointmentResponseDto[]> {
+    // Check if doctor exists
+    const doctor = await this.prisma.doctor.findUnique({
+      where: { id: doctorId },
+    });
+
+    if (!doctor) {
+      throw new NotFoundException(`Doctor with ID ${doctorId} not found`);
+    }
+
+    // Get appointments within date range
+    const appointments = await this.prisma.appointment.findMany({
+      where: {
+        slot: {
+          doctorId,
+          startTime: {
+            gte: moment(startDate).startOf('day').toDate(),
+            lte: moment(endDate).endOf('day').toDate(),
+          },
+        },
+      },
+      include: {
+        slot: true,
+      },
+      orderBy: {
+        slot: {
+          startTime: 'asc',
+        },
+      },
+    });
+
+    return appointments.map((appointment) => ({
+      id: appointment.id,
+      patientName: appointment.patientName,
+      patientEmail: appointment.patientEmail,
+      phoneNumber: appointment.phoneNumber,
+      startTime: appointment.slot.startTime,
+      endTime: appointment.slot.endTime,
+      notes: appointment.notes || undefined,
+      created_at: appointment.created_at,
+    }));
   }
 }

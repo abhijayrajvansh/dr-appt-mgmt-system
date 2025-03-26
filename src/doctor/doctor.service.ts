@@ -17,7 +17,9 @@ export class DoctorService {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
           const field = (error.meta?.target as string[])[0];
-          throw new ConflictException(`Doctor with this ${field} already exists`);
+          throw new ConflictException(
+            `Doctor with this ${field} already exists`,
+          );
         }
       }
       throw error;
@@ -33,18 +35,18 @@ export class DoctorService {
         email: true,
         slots: {
           where: {
-            status: 'AVAILABLE'
-          }
-        }
-      }
+            status: 'AVAILABLE',
+          },
+        },
+      },
     });
 
-    return doctors.map(doctor => ({
+    return doctors.map((doctor) => ({
       id: doctor.id,
       first_name: doctor.first_name,
       last_name: doctor.last_name,
       email: doctor.email,
-      available_slots_count: doctor.slots.length
+      available_slots_count: doctor.slots.length,
     }));
   }
 }
