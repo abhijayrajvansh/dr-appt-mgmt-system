@@ -77,17 +77,22 @@ The system uses the following main entities:
    npm install
    ```
 
-3. Start the PostgreSQL database using Docker:
+3. Create .env file from .env.example
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Start the PostgreSQL database using Docker:
    ```bash
    docker-compose up -d
    ```
 
-4. Run database migrations:
+5. Run database migrations:
    ```bash
    npx prisma migrate deploy
    ```
 
-5. Start the development server:
+6. Start the development server:
    ```bash
    npm run start:dev
    ```
