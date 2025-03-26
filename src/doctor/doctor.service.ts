@@ -23,4 +23,28 @@ export class DoctorService {
       throw error;
     }
   }
+
+  async getAllDoctors() {
+    const doctors = await this.prisma.doctor.findMany({
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        email: true,
+        slots: {
+          where: {
+            status: 'AVAILABLE'
+          }
+        }
+      }
+    });
+
+    return doctors.map(doctor => ({
+      id: doctor.id,
+      first_name: doctor.first_name,
+      last_name: doctor.last_name,
+      email: doctor.email,
+      available_slots_count: doctor.slots.length
+    }));
+  }
 }

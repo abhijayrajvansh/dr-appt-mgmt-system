@@ -1,20 +1,35 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { DoctorService } from './doctor.service';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { DoctorResponseDto } from './dto/doctor-response.dto';
+import { DoctorListResponseDto } from './dto/doctor-list-response.dto';
 import { 
   ApiOperation, 
   ApiTags, 
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
-  ApiBadRequestResponse 
+  ApiBadRequestResponse,
+  ApiOkResponse
 } from '@nestjs/swagger';
 
 @ApiTags('doctors')
 @Controller('doctors')
 export class DoctorController {
   constructor(private readonly doctorService: DoctorService) {}
+
+  @Get()
+  @ApiOperation({ 
+    summary: 'Get all doctors',
+    description: 'Retrieves a list of all doctors with their available slots count'
+  })
+  @ApiOkResponse({
+    description: 'List of doctors retrieved successfully',
+    type: [DoctorListResponseDto]
+  })
+  async getAllDoctors(): Promise<DoctorListResponseDto[]> {
+    return this.doctorService.getAllDoctors();
+  }
 
   @Post()
   @ApiOperation({ 
