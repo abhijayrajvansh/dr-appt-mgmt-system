@@ -1,98 +1,167 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Doctor Appointment Management System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Author: [Abhijay Rajvansh](https://abhijayrajvansh.com)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+A NestJS-based REST API for managing doctor appointments, built with TypeScript and PostgreSQL.
 
-## Description
+## Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Doctor management (create, list)
+- Slot management (create one-time/recurring slots, list available slots)
+- Appointment booking system
+- Swagger API documentation
+- Docker support for easy deployment
 
-## Project setup
+## Tech Stack
 
-```bash
-$ pnpm install
+- NestJS (Node.js framework)
+- PostgreSQL (Database)
+- Prisma (ORM)
+- Docker & Docker Compose
+- Swagger/OpenAPI (API Documentation)
+
+## Project Structure
+
+```
+src/
+├── app.module.ts          # Main application module
+├── main.ts               # Application entry point
+├── doctor/               # Doctor module and related files
+├── slots/                # Slot management module
+├── appointment/          # Appointment booking module
+└── prisma/              # Prisma ORM configuration
 ```
 
-## Compile and run the project
+## Database Schema
 
-```bash
-# development
-$ pnpm run start
+The system uses the following main entities:
 
-# watch mode
-$ pnpm run start:dev
+- **Doctor**: Stores doctor information
+- **Slot**: Manages appointment slots
+- **Appointment**: Handles booked appointments
+- **RecurrenceRule**: Manages recurring slot patterns
 
-# production mode
-$ pnpm run start:prod
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v20 or later)
+- Docker and Docker Compose
+- npm or yarn
+
+### Local Development Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/abhijayrajvansh/dr-appt-mgmt-system
+   cd dr-appt-mgmt-system
+   ```
+
+#### Using Docker
+
+2. Build and run the application using Docker:
+
+    ```bash
+    docker-compose up --build
+    ```
+    This will start both the PostgreSQL database and the NestJS application.
+    - server will start at http://localhost:3000/api/v1
+    - Swagger UI documentation at: http://localhost:3000/api/v1/docs
+
+#### or
+
+### Using Manual Installation
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the PostgreSQL database using Docker:
+   ```bash
+   docker-compose up -d
+   ```
+
+4. Run database migrations:
+   ```bash
+   npx prisma migrate deploy
+   ```
+
+5. Start the development server:
+   ```bash
+   npm run start:dev
+   ```
+
+The server will start at http://localhost:3000/api/v1
+
+### API Documentation
+
+Access the Swagger UI documentation at: http://localhost:3000/api/v1/docs
+
+## API Endpoints
+
+### Doctors
+
+- `GET /api/v1/doctors` - List all doctors with their available slot counts
+- `POST /api/v1/doctors` - Create a new doctor
+- `GET /api/v1/doctors/:doctorId/bookings` - Get doctor's booked appointments
+
+### Slots
+
+- `POST /api/v1/doctors/:doctorId/slots` - Create slots for a doctor (one-time or recurring)
+- `GET /api/v1/doctors/:doctorId/available_slots` - Get available slots for a doctor
+- `GET /api/v1/doctors/slots/:slotId` - Get detailed information about a specific slot
+
+### Appointments
+
+- `POST /api/v1/slots/:slotId/book` - Book an appointment for a slot
+
+
+
+
+
+## Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/doctor_appointments"
+
+# Server
+PORT=3000
+CORS_ORIGIN="*"
 ```
 
-## Run tests
+## API Features
 
-```bash
-# unit tests
-$ pnpm run test
+### Doctor Management
+- Create new doctors with validation for unique email and username
+- List all doctors with their available slot counts
+- View doctor's booking history
 
-# e2e tests
-$ pnpm run test:e2e
+### Slot Management
+- Create one-time or recurring slots (daily/weekly)
+- Configure slot duration and availability
+- View detailed slot information
 
-# test coverage
-$ pnpm run test:cov
-```
+### Appointment Booking
+- Book available slots with patient information
+- Automatic slot status management
+- Validation for double-booking prevention
 
-## Deployment
+## Error Handling
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+The API implements proper error handling for:
+- Resource not found (404)
+- Validation errors (400)
+- Conflict errors (409)
+- Server errors (500)
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Contributing
 
-```bash
-$ pnpm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
