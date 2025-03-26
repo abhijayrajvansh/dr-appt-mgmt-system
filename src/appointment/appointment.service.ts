@@ -55,7 +55,7 @@ export class AppointmentService {
 
       // Map to response DTO
       return {
-        id: appointment.id,
+        appointment_id: appointment.id,
         patientName: appointment.patientName,
         patientEmail: appointment.patientEmail,
         phoneNumber: appointment.phoneNumber,
@@ -112,7 +112,8 @@ export class AppointmentService {
     }
 
     return appointments.map((appointment) => ({
-      id: appointment.id,
+      appointment_id: appointment.id,
+      slot_id: appointment.slotId,
       patientName: appointment.patientName,
       patientEmail: appointment.patientEmail,
       phoneNumber: appointment.phoneNumber,

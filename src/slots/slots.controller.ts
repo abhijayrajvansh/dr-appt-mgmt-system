@@ -10,6 +10,7 @@ import { SlotsService } from './slots.service';
 import { CreateSlotDto } from './dto/create-slot.dto';
 import { SlotResponseDto } from './dto/slot-response.dto';
 import { AvailableSlotDto } from './dto/available-slot.dto';
+import { SlotDetailsDto } from './dto/slot-details.dto';
 
 @ApiTags('slots')
 @Controller('doctors')
@@ -67,5 +68,26 @@ export class SlotsController {
     @Query('date') date: string,
   ): Promise<AvailableSlotDto[] | { message: string }> {
     return this.slotsService.getAvailableSlots(doctorId, date);
+  }
+
+  @Get('slots/:slotId')
+  @ApiOperation({
+    summary: 'Get detailed information about a specific slot',
+    description:
+      'Returns slot details including doctor information and patient details if booked',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Slot details retrieved successfully',
+    type: SlotDetailsDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Slot not found',
+  })
+  async getSlotDetails(
+    @Param('slotId') slotId: string,
+  ): Promise<SlotDetailsDto> {
+    return this.slotsService.getSlotDetailsById(slotId);
   }
 }

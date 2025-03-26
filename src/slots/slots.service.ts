@@ -5,6 +5,7 @@ import { SlotResponseDto } from './dto/slot-response.dto';
 import { RecurrenceType } from './enums/recurrence-type.enum';
 import { AvailableSlotDto } from './dto/available-slot.dto';
 import { SlotStatus } from './enums/slot-status.enum';
+import { SlotDetailsDto } from './dto/slot-details.dto';
 import * as moment from 'moment';
 
 interface TimeSlot {
@@ -178,5 +179,45 @@ export class SlotsService {
       endTime: slot.endTime,
       duration: slot.duration,
     }));
+  }
+
+  async getSlotDetailsById(slotId: string): Promise<SlotDetailsDto> {
+    const slot = await this.prisma.slot.findUnique({
+      where: { id: slotId },
+      include: {
+        doctor: true,
+        appointment: true,
+      },
+    });
+
+    if (!slot) {
+      throw new NotFoundException(`Slot with ID ${slotId} not found`);
+    }
+
+    const response: SlotDetailsDto = {
+      id: slot.id,
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+      duration: slot.duration,
+      status: slot.status as SlotStatus,
+      doctor: {
+        id: slot.doctor.id,
+        username: slot.doctor.username,
+        first_name: slot.doctor.first_name,
+        last_name: slot.doctor.last_name,
+        email: slot.doctor.email,
+      },
+    };
+
+    if (slot.appointment) {
+      response.patient = {
+        name: slot.appointment.patientName,
+        email: slot.appointment.patientEmail,
+        phoneNumber: slot.appointment.phoneNumber,
+        notes: slot.appointment.notes || undefined,
+      };
+    }
+
+    return response;
   }
 }
