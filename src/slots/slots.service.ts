@@ -143,7 +143,7 @@ export class SlotsService {
   async getAvailableSlots(
     doctorId: string,
     date: string,
-  ): Promise<AvailableSlotDto[]> {
+  ): Promise<AvailableSlotDto[] | { message: string }> {
     const doctor = await this.prisma.doctor.findUnique({
       where: { id: doctorId },
     });
@@ -167,6 +167,10 @@ export class SlotsService {
         startTime: 'asc',
       },
     });
+
+    if (availableSlots.length === 0) {
+      return { message: 'No slots available' };
+    }
 
     return availableSlots.map((slot) => ({
       id: slot.id,

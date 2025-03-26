@@ -26,23 +26,32 @@ async function bootstrap() {
     }),
   );
 
-
   const config = new DocumentBuilder()
     .setTitle('Doctor Appointment System API')
     .setDescription('API for managing doctors and appointments')
     .setVersion('1.0')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  
+  const document = SwaggerModule.createDocument(app, config, {
+    extraModels: [], // Swagger will automatically detect and include all DTOs decorated with @ApiProperty
+  });
+
   // swagger docs at /api/v1/docs
-  SwaggerModule.setup('api/v1/docs', app, document);
+  SwaggerModule.setup('api/v1/docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      filter: true,
+      showRequestDuration: true,
+    },
+  });
 
   const PORT = process.env.PORT || 3000;
   await app.listen(PORT);
 
   console.log(`\n[server]: is running on http://localhost:${PORT}/api/v1`);
-  console.log(`[swagger-docs]: available at http://localhost:${PORT}/api/v1/docs`);
+  console.log(
+    `[swagger-docs]: available at http://localhost:${PORT}/api/v1/docs`,
+  );
 }
 
 bootstrap();
